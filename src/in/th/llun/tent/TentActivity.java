@@ -1,22 +1,33 @@
 package in.th.llun.tent;
 
-import android.os.Bundle;
+import in.th.llun.tent.remote.Tent;
 import android.app.Activity;
-import android.view.Menu;
+import android.os.Bundle;
 
 public class TentActivity extends Activity {
+
+	private Tent mTent;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_tent);
+
+		mTent = Tent.getInstance(getApplicationContext());
+
+		if (!mTent.isLoggedIn()) {
+			showLoginPage();
+		} else {
+			showMainPage();
+		}
+
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.tent, menu);
-		return true;
+	private void showLoginPage() {
+		setContentView(R.layout.activity_login);
+	}
+
+	private void showMainPage() {
+		setContentView(R.layout.activity_tent);
 	}
 
 }

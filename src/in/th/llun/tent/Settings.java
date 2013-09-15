@@ -1,6 +1,10 @@
 package in.th.llun.tent;
 
 import in.th.llun.tent.remote.Tent;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -14,7 +18,7 @@ public class Settings {
 
 	private static Settings sInstance;
 
-	private Context mContext;
+	private Map<String, Object> mProperties;
 
 	public static Settings getInstance(Context context) {
 		if (sInstance == null) {
@@ -28,27 +32,39 @@ public class Settings {
 		return sInstance;
 	}
 
-	private Settings(Context context) {
-		mContext = context;
+	public Settings(Context context) {
+		mProperties = new HashMap<String, Object>();
+		try {
+			Bundle bundle = context.getPackageManager().getApplicationInfo(
+			    context.getPackageName(), PackageManager.GET_META_DATA).metaData;
+			if (bundle.containsKey(KEY_BASECAMP_ID)) {
+				mProperties.put(KEY_BASECAMP_ID, bundle.getString(KEY_BASECAMP_ID));
+			}
+
+			if (bundle.containsKey(KEY_BASECAMP_SECRET)) {
+				mProperties.put(KEY_BASECAMP_SECRET,
+				    bundle.getString(KEY_BASECAMP_SECRET));
+			}
+
+		} catch (NameNotFoundException e) {
+			Log.d(Tent.LOG_TAG, "Cannot get application meta data", e);
+		}
+	}
+
+	public Settings(Map<String, Object> properties) {
+		mProperties = properties;
 	}
 
 	public String getID() {
-		return getBundle().getString(KEY_BASECAMP_ID);
+		if (mProperties.containsKey(KEY_BASECAMP_ID))
+			return (String) mProperties.get(KEY_BASECAMP_ID);
+		return null;
 	}
 
 	public String getSecret() {
-		return getBundle().getString(KEY_BASECAMP_SECRET);
+		if (mProperties.containsKey(KEY_BASECAMP_SECRET))
+			return (String) mProperties.get(KEY_BASECAMP_SECRET);
+		return null;
 	}
 
-	private Bundle getBundle() {
-		try {
-			Bundle bundle = mContext.getPackageManager().getApplicationInfo(
-			    mContext.getPackageName(), PackageManager.GET_META_DATA).metaData;
-			return bundle;
-		} catch (NameNotFoundException e) {
-			Log.d(Tent.LOG_TAG, "Cannot get application meta data", e);
-			return null;
-		}
-
-	}
 }
