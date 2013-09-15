@@ -3,19 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="10dp"
     tools:context=".MainActivity" >
 
-    <ProgressBar
-        android:id="@+id/webLoadingBar"
-        style="@style/Widget.Tent.ProgressBar.Horizontal"
+    <Button
+        android:id="@+id/loginButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true" />
-
-    <WebView
-        android:id="@+id/webContent"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:text="@string/main_login_button" />
 
 </RelativeLayout>

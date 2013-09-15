@@ -1,45 +1,49 @@
 package in.th.llun.tent.remote;
 
 import in.th.llun.tent.Settings;
+import in.th.llun.tent.model.Authorization;
+import in.th.llun.tent.model.BasecampResponse;
 
-import org.apache.http.HttpVersion;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.params.ConnManagerParams;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.params.HttpProtocolParams;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
+import java.util.Date;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.scribe.builder.ServiceBuilder;
+import org.scribe.extractors.TokenExtractor20Impl;
+import org.scribe.model.OAuthRequest;
+import org.scribe.model.Response;
+import org.scribe.model.Token;
+import org.scribe.model.Verb;
+import org.scribe.oauth.OAuthService;
 
 import android.content.Context;
+import android.os.Handler;
+import android.util.Log;
 
 public class Tent {
 
 	public static final String LOG_TAG = "Tent";
 
-	private static final String BASECAMP_HEADER_CONTACT_VALUE = "Maythee Anegboonlap Integration (null@llun.in.th)";
+	private static final String BASECAMP_AUTHORIZE_REDIRECT_URL = "tentapp://basecamp/login/auth";
 
 	private static Tent sTent;
 	private Settings mSettings;
 
-	private DefaultHttpClient mClient;
-	private HttpContext mClientContext;
-	private BasicCookieStore mCookieStore;
+	private Context mContext;
+	private OAuthService mService;
+	private ExecutorService mExecutor;
+
+	private Token mToken;
 
 	public static Tent getInstance(Context context) {
 		if (sTent == null) {
 			synchronized (Tent.class) {
 				if (sTent == null) {
-					sTent = new Tent(Settings.getInstance(context));
+					sTent = new Tent(context, Settings.getInstance(context));
 				}
 			}
 		}
@@ -47,45 +51,107 @@ public class Tent {
 		return sTent;
 	}
 
-	public Tent(Settings settings) {
+	public Tent(Context context, Settings settings) {
+		mContext = context;
 		mSettings = settings;
-
-		HttpParams params = new BasicHttpParams();
-		ConnManagerParams.setMaxTotalConnections(params, 100);
-		HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
-		params.setParameter(CoreProtocolPNames.USER_AGENT,
-		    BASECAMP_HEADER_CONTACT_VALUE);
-
-		// Set the timeout in milliseconds until a connection is established.
-		// The default value is zero, that means the timeout is not used.
-		int timeoutConnection = 10000;
-		HttpConnectionParams.setConnectionTimeout(params, timeoutConnection);
-		// Set the default socket timeout (SO_TIMEOUT)
-		// in milliseconds which is the timeout for waiting for data.
-		int timeoutSocket = 30000;
-		HttpConnectionParams.setSoTimeout(params, timeoutSocket);
-
-		// Create and initialize scheme registry
-		SchemeRegistry schemeRegistry = new SchemeRegistry();
-		schemeRegistry.register(new Scheme("http", PlainSocketFactory
-		    .getSocketFactory(), 80));
-		schemeRegistry.register(new Scheme("https", SSLSocketFactory
-		    .getSocketFactory(), 443));
-
-		// Create an HttpClient with the ThreadSafeClientConnManager.
-		// This connection manager must be used if more than one thread will
-		// be using the HttpClient.
-		ClientConnectionManager cm = new ThreadSafeClientConnManager(params,
-		    schemeRegistry);
-		mClient = new DefaultHttpClient(cm, params);
-		mClientContext = new BasicHttpContext();
-		mCookieStore = new BasicCookieStore();
-		mClient.setCookieStore(mCookieStore);
-
+		mExecutor = Executors.newSingleThreadExecutor();
+		mService = new ServiceBuilder().provider(BasecampApi.class)
+		    .apiKey(mSettings.getID()).apiSecret(mSettings.getSecret())
+		    .callback(BASECAMP_AUTHORIZE_REDIRECT_URL).build();
 	}
 
 	public boolean isLoggedIn() {
 		return false;
+	}
+
+	public String authorizationUrl() {
+		return mService.getAuthorizationUrl(null);
+	}
+
+	public void token(String url, final BasecampResponse<Authorization> response) {
+		Log.d(LOG_TAG, "Access Token: " + url);
+		mToken = new TokenExtractor20Impl().extract(url);
+		invoke("https://launchpad.37signals.com/authorization.json", Verb.GET,
+		    null, new BaseRemoteResult() {
+
+			    @Override
+			    public void onResponse(JSONObject object) {
+				    if (response != null) {
+					    response.onResponse(new Authorization(object));
+				    }
+			    }
+
+		    });
+
+	}
+
+	public void loadEvents(Date since, int page) {
+
+	}
+
+	private void invoke(final String url, Verb verb,
+	    Map<String, String> parameters, final RemoteResult result) {
+
+		final OAuthRequest request = new OAuthRequest(verb, url);
+
+		if (parameters != null) {
+			switch (verb) {
+			case POST:
+			case PUT:
+				for (String key : parameters.keySet()) {
+					request.addBodyParameter(key, parameters.get(key));
+				}
+				break;
+			// Default is get
+			default:
+				for (String key : parameters.keySet()) {
+					request.addQuerystringParameter(key, parameters.get(key));
+				}
+			}
+		}
+
+		mExecutor.submit(new Runnable() {
+
+			@Override
+			public void run() {
+				mService.signRequest(mToken, request);
+				Response response = request.send();
+				final String body = response.getBody();
+				Log.v(LOG_TAG, body);
+
+				if (mContext != null) {
+					Handler handler = new Handler(mContext.getMainLooper());
+					handler.post(new Runnable() {
+
+						@Override
+						public void run() {
+							try {
+								JSONObject json = new JSONObject(body);
+								result.onResponse(json);
+							} catch (JSONException je) {
+								try {
+									JSONArray json = new JSONArray(body);
+									result.onResponse(json);
+								} catch (JSONException je2) {
+									try {
+										result.onResponse(body);
+									} catch (Exception e) {
+										Log.e(LOG_TAG, e.getMessage(), e);
+									}
+								} catch (Exception e) {
+									Log.e(LOG_TAG, e.getMessage(), e);
+								}
+							} catch (Exception e) {
+								Log.e(LOG_TAG, e.getMessage(), e);
+							}
+
+						}
+					});
+				}
+
+			}
+		});
+
 	}
 
 }

@@ -6,25 +6,44 @@
 
     <uses-sdk
         android:minSdkVersion="14"
-        android:targetSdkVersion="17" />
+        android:targetSdkVersion="18" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-        
+
         <!-- Register app for ID and Secret at https://integrate.37signals.com/apps -->
-        <meta-data android:name="th.llun.tent.basecamp.id" android:value="id" />
-        <meta-data android:name="th.llun.tent.basecamp.secret" android:value="secret" />
-        
+        <meta-data
+            android:name="th.llun.tent.basecamp.id"
+            android:value="key" />
+        <meta-data
+            android:name="th.llun.tent.basecamp.secret"
+            android:value="secret" />
+
         <activity
-            android:name="in.th.llun.tent.TentActivity"
+            android:name="in.th.llun.tent.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name="in.th.llun.tent.LoginActivity" >
+            <intent-filter android:label="@string/login_label" >
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="basecamp"
+                    android:pathPrefix="/login/auth"
+                    android:scheme="tentapp" />
             </intent-filter>
         </activity>
     </application>

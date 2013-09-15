@@ -3,9 +3,10 @@
 
     <string name="app_name">Tent</string>
 
-    <!-- Login page -->
-    <string name="login_username_field">Username</string>
-    <string name="login_password_field">Password</string>
-    <string name="login_submit_button">Login</string>
+    <!-- Main Page -->
+    <string name="main_login_button">Login</string>
+    
+    <!-- Login Page -->
+    <string name="login_label">Login to basecamp</string>
 
 </resources>
