@@ -13,6 +13,11 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+        
+        <!-- Register app for ID and Secret at https://integrate.37signals.com/apps -->
+        <meta-data android:name="th.llun.tent.basecamp.id" android:value="id" />
+        <meta-data android:name="th.llun.tent.basecamp.secret" android:value="secret" />
+        
         <activity
             android:name="in.th.llun.tent.TentActivity"
             android:label="@string/app_name" >
