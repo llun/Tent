@@ -21,6 +21,8 @@ import org.scribe.model.Verb;
 import org.scribe.oauth.OAuthService;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Handler;
 import android.util.Log;
 
@@ -30,14 +32,19 @@ public class Tent {
 
 	private static final String BASECAMP_AUTHORIZE_REDIRECT_URL = "tentapp://basecamp/login/auth";
 
-	private static Tent sTent;
-	private Settings mSettings;
+	private static final String TENT_AUTHENTICATION_STORE = "tent.authentication";
+	private static final String TENT_STORE_KEY_RAW = "raw";
+	private static final String TENT_STORE_KEY_EXPIRES = "expires";
 
+	private static Tent sTent;
+
+	private Settings mSettings;
 	private Context mContext;
 	private OAuthService mService;
 	private ExecutorService mExecutor;
 
-	private Token mToken;
+	private Token mToken = null;
+	private Date mTokenExpires = null;
 
 	public static Tent getInstance(Context context) {
 		if (sTent == null) {
@@ -58,9 +65,33 @@ public class Tent {
 		mService = new ServiceBuilder().provider(BasecampApi.class)
 		    .apiKey(mSettings.getID()).apiSecret(mSettings.getSecret())
 		    .callback(BASECAMP_AUTHORIZE_REDIRECT_URL).build();
+
+		SharedPreferences preference = context.getSharedPreferences(
+		    TENT_AUTHENTICATION_STORE, Context.MODE_PRIVATE);
+		String rawToken = preference.getString(TENT_STORE_KEY_RAW, null);
+		if (rawToken != null) {
+			long expiresTimestamp = preference.getLong(TENT_STORE_KEY_EXPIRES, 0);
+			if (new Date().getTime() > expiresTimestamp) {
+				Editor editor = preference.edit();
+				editor.clear();
+				editor.commit();
+			} else {
+				mToken = new TokenExtractor20Impl().extract(rawToken);
+				mTokenExpires = new Date(expiresTimestamp);
+			}
+		}
 	}
 
 	public boolean isLoggedIn() {
+		if (new Date().getTime() > mTokenExpires.getTime()) {
+			SharedPreferences preference = mContext.getSharedPreferences(
+			    TENT_AUTHENTICATION_STORE, Context.MODE_PRIVATE);
+			Editor editor = preference.edit();
+			editor.clear();
+			editor.commit();
+		} else if (mToken != null) {
+			return true;
+		}
 		return false;
 	}
 
@@ -69,15 +100,26 @@ public class Tent {
 	}
 
 	public void token(String url, final BasecampResponse<Authorization> response) {
-		Log.d(LOG_TAG, "Access Token: " + url);
+		Log.v(LOG_TAG, "Access Token: " + url);
 		mToken = new TokenExtractor20Impl().extract(url);
 		invoke("https://launchpad.37signals.com/authorization.json", Verb.GET,
 		    null, new BaseRemoteResult() {
 
 			    @Override
 			    public void onResponse(JSONObject object) {
+				    Authorization authorization = new Authorization(object);
+				    mTokenExpires = authorization.getExpiresAt();
+
+				    SharedPreferences preference = mContext.getSharedPreferences(
+				        TENT_AUTHENTICATION_STORE, Context.MODE_PRIVATE);
+				    Editor editor = preference.edit();
+				    editor.putString(TENT_STORE_KEY_RAW, mToken.getRawResponse());
+				    editor.putLong(TENT_STORE_KEY_EXPIRES, authorization.getExpiresAt()
+				        .getTime());
+				    editor.commit();
+
 				    if (response != null) {
-					    response.onResponse(new Authorization(object));
+					    response.onResponse(authorization);
 				    }
 			    }
 
