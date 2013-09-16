@@ -25,6 +25,9 @@ public class LoginActivity extends Activity {
 
 		mTent = Tent.getInstance(getApplicationContext());
 
+		final Activity activity = this;
+
+		final View authenticatingView = (View) findViewById(R.id.authenticating);
 		final ProgressBar loadingBar = (ProgressBar) findViewById(R.id.webLoadingBar);
 		final WebView webView = (android.webkit.WebView) findViewById(R.id.webContent);
 		loadingBar.setVisibility(View.VISIBLE);
@@ -44,12 +47,12 @@ public class LoginActivity extends Activity {
 			public boolean shouldOverrideUrlLoading(android.webkit.WebView view,
 			    String url) {
 				if (url.startsWith("tentapp")) {
+					authenticatingView.setVisibility(View.VISIBLE);
 					mTent.token(url, new BasecampResponse<Authorization>() {
-						
+
 						@Override
 						public void onResponse(Authorization response) {
-							// TODO Auto-generated method stub
-							
+							activity.finish();
 						}
 					});
 				} else {

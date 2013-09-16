@@ -5,17 +5,41 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity" >
 
-    <ProgressBar
-        android:id="@+id/webLoadingBar"
-        style="@style/Widget.Tent.ProgressBar.Horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true" />
-
     <WebView
         android:id="@+id/webContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <ProgressBar
+        android:id="@+id/webLoadingBar"
+        style="@android:style/Widget.Holo.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="-6dip" />
+
+    <RelativeLayout
+        android:id="@+id/authenticating"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/loading_background"
+        android:visibility="gone" >
+
+        <ProgressBar
+            android:id="@+id/autheticateProgress"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/autheticateProgress"
+            android:layout_centerHorizontal="true"
+            android:text="@string/login_authenticating"
+            android:textSize="20sp" />
+    </RelativeLayout>
 
 </RelativeLayout>

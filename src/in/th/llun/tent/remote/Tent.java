@@ -83,7 +83,7 @@ public class Tent {
 	}
 
 	public boolean isLoggedIn() {
-		if (new Date().getTime() > mTokenExpires.getTime()) {
+		if (mTokenExpires != null && new Date().getTime() > mTokenExpires.getTime()) {
 			SharedPreferences preference = mContext.getSharedPreferences(
 			    TENT_AUTHENTICATION_STORE, Context.MODE_PRIVATE);
 			Editor editor = preference.edit();

@@ -8,5 +8,6 @@
     
     <!-- Login Page -->
     <string name="login_label">Login to basecamp</string>
+    <string name="login_authenticating">Authenticating</string>
 
 </resources>
