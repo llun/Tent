@@ -2,5 +2,9 @@
 <resources>
 
     <color name="loading_background">#ffffff</color>
+
+    <!-- Progress Page -->
+    <color name="progress_event_grid_background">#ffffff</color>
+    <color name="progress_event_grid_shadow">#000000</color>
     
 </resources>
