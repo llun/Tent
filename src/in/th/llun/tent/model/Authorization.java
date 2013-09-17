@@ -1,10 +1,10 @@
 package in.th.llun.tent.model;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Locale;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class Authorization extends JSONRemoteObject {
@@ -14,12 +14,23 @@ public class Authorization extends JSONRemoteObject {
 	}
 
 	public Date getExpiresAt() {
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'",
-		    Locale.getDefault());
 		try {
-			return format.parse(mRaw.optString("expires_at"));
+			return Formatter.dateFromString(mRaw.optString("expires_at"));
 		} catch (ParseException e) {
 			return null;
 		}
+	}
+
+	public RemoteCollection<Account> getAccounts() {
+		JSONArray array = mRaw.optJSONArray("accounts");
+		ArrayList<Account> accounts = new ArrayList<Account>(array.length());
+
+		for (int i = 0; i < array.length(); i++) {
+			JSONObject raw = array.optJSONObject(i);
+			Account account = new Account(raw);
+			accounts.add(account);
+		}
+
+		return new RemoteCollection<Account>(accounts);
 	}
 }

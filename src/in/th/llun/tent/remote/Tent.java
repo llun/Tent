@@ -1,10 +1,15 @@
 package in.th.llun.tent.remote;
 
 import in.th.llun.tent.Settings;
+import in.th.llun.tent.model.Account;
 import in.th.llun.tent.model.Authorization;
 import in.th.llun.tent.model.BasecampResponse;
+import in.th.llun.tent.model.Event;
+import in.th.llun.tent.model.RemoteCollection;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -34,6 +39,7 @@ public class Tent {
 
 	private static final String TENT_AUTHENTICATION_STORE = "tent.authentication";
 	private static final String TENT_STORE_KEY_RAW = "raw";
+	private static final String TENT_STORE_KEY_ACCOUNT = "account";
 	private static final String TENT_STORE_KEY_EXPIRES = "expires";
 
 	private static Tent sTent;
@@ -45,6 +51,7 @@ public class Tent {
 
 	private Token mToken = null;
 	private Date mTokenExpires = null;
+	private Account mAccount = null;
 
 	public static Tent getInstance(Context context) {
 		if (sTent == null) {
@@ -76,8 +83,14 @@ public class Tent {
 				editor.clear();
 				editor.commit();
 			} else {
-				mToken = new TokenExtractor20Impl().extract(rawToken);
-				mTokenExpires = new Date(expiresTimestamp);
+				String rawAccount = preference.getString(TENT_STORE_KEY_ACCOUNT, null);
+				try {
+					mAccount = new Account(new JSONObject(rawAccount));
+					mToken = new TokenExtractor20Impl().extract(rawToken);
+					mTokenExpires = new Date(expiresTimestamp);
+				} catch (Exception e) {
+					Log.e(LOG_TAG, "Can't restore account", e);
+				}
 			}
 		}
 	}
@@ -95,6 +108,15 @@ public class Tent {
 		return false;
 	}
 
+	public void saveAccount(Account account) {
+		mAccount = account;
+		SharedPreferences preference = mContext.getSharedPreferences(
+		    TENT_AUTHENTICATION_STORE, Context.MODE_PRIVATE);
+		Editor editor = preference.edit();
+		editor.putString(TENT_STORE_KEY_ACCOUNT, account.rawString());
+		editor.commit();
+	}
+
 	public String authorizationUrl() {
 		return mService.getAuthorizationUrl(null);
 	}
@@ -102,33 +124,62 @@ public class Tent {
 	public void token(String url, final BasecampResponse<Authorization> response) {
 		Log.v(LOG_TAG, "Access Token: " + url);
 		mToken = new TokenExtractor20Impl().extract(url);
+		loadAccounts(new BasecampResponse<Authorization>() {
+
+			@Override
+			public void onResponse(Authorization authorization) {
+				mTokenExpires = authorization.getExpiresAt();
+
+				SharedPreferences preference = mContext.getSharedPreferences(
+				    TENT_AUTHENTICATION_STORE, Context.MODE_PRIVATE);
+				Editor editor = preference.edit();
+				editor.putString(TENT_STORE_KEY_RAW, mToken.getRawResponse());
+				editor.putLong(TENT_STORE_KEY_EXPIRES, authorization.getExpiresAt()
+				    .getTime());
+				editor.commit();
+
+				if (response != null) {
+					response.onResponse(authorization);
+				}
+			}
+
+		});
+	}
+
+	public void loadAccounts(final BasecampResponse<Authorization> response) {
 		invoke("https://launchpad.37signals.com/authorization.json", Verb.GET,
 		    null, new BaseRemoteResult() {
 
 			    @Override
 			    public void onResponse(JSONObject object) {
-				    Authorization authorization = new Authorization(object);
-				    mTokenExpires = authorization.getExpiresAt();
-
-				    SharedPreferences preference = mContext.getSharedPreferences(
-				        TENT_AUTHENTICATION_STORE, Context.MODE_PRIVATE);
-				    Editor editor = preference.edit();
-				    editor.putString(TENT_STORE_KEY_RAW, mToken.getRawResponse());
-				    editor.putLong(TENT_STORE_KEY_EXPIRES, authorization.getExpiresAt()
-				        .getTime());
-				    editor.commit();
-
 				    if (response != null) {
-					    response.onResponse(authorization);
+					    response.onResponse(new Authorization(object));
 				    }
 			    }
 
 		    });
-
 	}
 
-	public void loadEvents(Date since, int page) {
+	public void loadEvents(
+	    final BasecampResponse<RemoteCollection<Event>> response) {
+		HashMap<String, String> parameters = new HashMap<String, String>();
 
+		invoke(getEndpoint("events"), Verb.GET, parameters, new BaseRemoteResult() {
+
+			public void onResponse(JSONArray array) {
+				ArrayList<Event> events = new ArrayList<Event>(array.length());
+				for (int i = 0; i < array.length(); i++) {
+					JSONObject raw = array.optJSONObject(i);
+					events.add(new Event(raw));
+				}
+				response.onResponse(new RemoteCollection<Event>(events));
+			}
+
+		});
+	}
+
+	private String getEndpoint(String model) {
+		return String.format("%s/%s.json", mAccount.getAPIEndpoint(), model);
 	}
 
 	private void invoke(final String url, Verb verb,

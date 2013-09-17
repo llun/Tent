@@ -1,8 +1,12 @@
 package in.th.llun.tent;
 
+import in.th.llun.tent.model.Account;
 import in.th.llun.tent.model.Authorization;
 import in.th.llun.tent.model.BasecampResponse;
 import in.th.llun.tent.remote.Tent;
+
+import java.util.List;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
@@ -52,6 +56,14 @@ public class LoginActivity extends Activity {
 
 						@Override
 						public void onResponse(Authorization response) {
+							Log.d(Tent.LOG_TAG, response.rawString());
+							List<Account> accounts = response.getAccounts().collection();
+							if (accounts.size() > 1) {
+								// Show popup for choosing account
+							}
+							else {
+								mTent.saveAccount(accounts.get(0));
+							}
 							activity.finish();
 						}
 					});

@@ -4,4 +4,11 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity" >
 
+    <GridView
+        android:id="@+id/eventGrid"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:numColumns="1" >
+    </GridView>
+
 </RelativeLayout>
