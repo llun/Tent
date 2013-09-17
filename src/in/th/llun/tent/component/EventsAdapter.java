@@ -1,13 +1,16 @@
 package in.th.llun.tent.component;
 
+import in.th.llun.tent.R;
 import in.th.llun.tent.model.Event;
 
 import java.util.List;
 
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.TextView;
 
 public class EventsAdapter extends BaseAdapter {
 
@@ -38,8 +41,15 @@ public class EventsAdapter extends BaseAdapter {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View row = convertView;
 		if (row == null) {
-			
+			row = mLayoutInflater.inflate(R.layout.grid_event, parent, false);
 		}
+
+		Event event = mEvents.get(position);
+
+		TextView title = (TextView) row.findViewById(R.id.eventTitle);
+		title.setText(Html.fromHtml(String.format("%s %s %s", event.getCreator()
+		    .getName(), event.getAction(), event.getTarget())));
+
 		return row;
 	}
 

@@ -1,5 +1,6 @@
 package in.th.llun.tent;
 
+import in.th.llun.tent.component.EventsAdapter;
 import in.th.llun.tent.model.BasecampResponse;
 import in.th.llun.tent.model.Event;
 import in.th.llun.tent.model.RemoteCollection;
@@ -8,6 +9,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.GridView;
 
 public class MainActivity extends Activity {
 
@@ -44,7 +46,11 @@ public class MainActivity extends Activity {
 
 			@Override
 			public void onResponse(RemoteCollection<Event> response) {
-				
+				EventsAdapter adapter = new EventsAdapter(response.collection(),
+				    getLayoutInflater());
+				GridView eventGrid = (GridView) findViewById(R.id.eventGrid);
+				eventGrid.setAdapter(adapter);
+				adapter.notifyDataSetChanged();
 			}
 		});
 	}
