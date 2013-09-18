@@ -1,5 +1,6 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="Theme.Tent" parent="@android:style/Theme.Holo.Light"></style>
+    <style name="Theme.Tent" parent="@android:style/Theme.Holo.Light">
+    </style>
 
 </resources>

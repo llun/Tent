@@ -1,5 +1,6 @@
 package in.th.llun.tent.component;
 
+import in.th.llun.tent.ImageLoader;
 import in.th.llun.tent.R;
 import in.th.llun.tent.model.Event;
 
@@ -10,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class EventsAdapter extends BaseAdapter {
@@ -45,6 +47,13 @@ public class EventsAdapter extends BaseAdapter {
 		}
 
 		Event event = mEvents.get(position);
+
+		ImageView avatarImageView = (ImageView) row
+		    .findViewById(R.id.creatorAvatar);
+		ViewGroup avatarLoadingView = (ViewGroup) row
+		    .findViewById(R.id.loadingView);
+		new ImageLoader(avatarImageView, avatarLoadingView).execute(event
+		    .getCreator().getAvatarUrl());
 
 		TextView title = (TextView) row.findViewById(R.id.eventTitle);
 		title.setText(Html.fromHtml(String.format("%s %s %s", event.getCreator()

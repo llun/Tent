@@ -14,10 +14,45 @@
         android:background="@drawable/event_grid_background"
         android:padding="10dp" >
 
+        <RelativeLayout
+            android:id="@+id/avatarIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <ImageView
+                android:id="@+id/creatorAvatar"
+                android:layout_width="50dip"
+                android:layout_height="50dip"
+                android:contentDescription="@string/progress_creator_avatar" />
+
+            <RelativeLayout
+                android:id="@+id/loadingView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignBottom="@+id/creatorAvatar"
+                android:layout_alignLeft="@+id/creatorAvatar"
+                android:layout_alignRight="@+id/creatorAvatar"
+                android:layout_alignTop="@+id/creatorAvatar"
+                android:background="@color/loading_background" >
+
+                <ProgressBar
+                    android:id="@+id/loadingProgress"
+                    style="?android:attr/progressBarStyleLarge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true" />
+            </RelativeLayout>
+        </RelativeLayout>
+
         <TextView
             android:id="@+id/eventTitle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/avatarIcon"
+            android:text="@string/loading"
+            android:textSize="12sp" />
     </RelativeLayout>
 
 </RelativeLayout>

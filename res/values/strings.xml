@@ -2,12 +2,13 @@
 <resources>
 
     <string name="app_name">Tent</string>
+    <string name="loading">Loading</string>
 
-    <!-- Main Page -->
-    <string name="main_login_button">Login</string>
-    
     <!-- Login Page -->
     <string name="login_label">Login to basecamp</string>
     <string name="login_authenticating">Authenticating</string>
+    
+    <!-- Progress Page -->
+    <string name="progress_creator_avatar">Creator avatar image</string>
 
 </resources>
