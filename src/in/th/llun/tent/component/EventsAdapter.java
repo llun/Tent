@@ -6,6 +6,8 @@ import in.th.llun.tent.model.Event;
 
 import java.util.List;
 
+import org.ocpsoft.prettytime.PrettyTime;
+
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,12 +54,16 @@ public class EventsAdapter extends BaseAdapter {
 		    .findViewById(R.id.creatorAvatar);
 		ViewGroup avatarLoadingView = (ViewGroup) row
 		    .findViewById(R.id.loadingView);
+		avatarLoadingView.setVisibility(View.VISIBLE);
 		new ImageLoader(avatarImageView, avatarLoadingView).execute(event
 		    .getCreator().getAvatarUrl());
 
 		TextView title = (TextView) row.findViewById(R.id.eventTitle);
 		title.setText(Html.fromHtml(String.format("%s %s %s", event.getCreator()
 		    .getName(), event.getAction(), event.getTarget())));
+
+		TextView timestamp = (TextView) row.findViewById(R.id.eventTime);
+		timestamp.setText(new PrettyTime().format(event.getCreatedAt()));
 
 		return row;
 	}
