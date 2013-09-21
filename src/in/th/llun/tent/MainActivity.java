@@ -11,6 +11,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.GridView;
 
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+
 public class MainActivity extends Activity {
 
 	private Tent mTent;
@@ -41,6 +43,14 @@ public class MainActivity extends Activity {
 
 	private void showMainPage() {
 		setContentView(R.layout.activity_main_progress);
+
+		SlidingMenu menu = new SlidingMenu(this);
+		menu.setMode(SlidingMenu.LEFT);
+		menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+		menu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
+		menu.setFadeDegree(0.35f);
+		menu.setBehindOffsetRes(R.dimen.behide_menu_offset);
+		menu.setMenu(R.layout.main_menu);
 
 		mTent.loadEvents(new BasecampResponse<RemoteCollection<Event>>() {
 
