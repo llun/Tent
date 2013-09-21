@@ -24,7 +24,7 @@
         android:background="@color/main_menu_background"
         android:choiceMode="singleChoice"
         android:divider="@android:color/transparent"
-        android:dividerHeight="0dp"
+        android:dividerHeight="1dp"
         android:paddingLeft="@dimen/menu_padding"
         android:paddingRight="@dimen/menu_padding" />
 

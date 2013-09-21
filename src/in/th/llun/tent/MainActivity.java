@@ -100,10 +100,18 @@ public class MainActivity extends Activity {
 		private static class NormalRow {
 			final public String mName;
 			final public int mImageResource;
+			final public int mBackgroundResource;
 
 			public NormalRow(String name, int imageResource) {
 				mName = name;
 				mImageResource = imageResource;
+				mBackgroundResource = 0;
+			}
+
+			public NormalRow(String name, int imageResource, int backgroundResource) {
+				mName = name;
+				mImageResource = imageResource;
+				mBackgroundResource = backgroundResource;
 			}
 		}
 
@@ -120,15 +128,28 @@ public class MainActivity extends Activity {
 			mTent = Tent.getInstance();
 
 			mMenus = new ArrayList<NormalRow>();
+			mMenus.add(new NormalRow(mResources.getString(R.string.menu_progress),
+			    R.drawable.ic_progress));
 			mMenus.add(new NormalRow(
 			    mResources.getString(R.string.menu_all_projects),
 			    R.drawable.ic_project));
+			mMenus.add(new NormalRow(mResources.getString(R.string.menu_calendars),
+			    R.drawable.ic_calendar));
+			mMenus.add(new NormalRow(mResources.getString(R.string.menu_discussions),
+			    R.drawable.ic_discussions));
+			mMenus.add(new NormalRow(mResources.getString(R.string.menu_notes),
+			    R.drawable.ic_note));
+			mMenus.add(new NormalRow(mResources.getString(R.string.menu_settings),
+			    R.drawable.ic_settings, R.drawable.menu_divider_row_background));
+			mMenus.add(new NormalRow(mResources.getString(R.string.menu_logout),
+			    R.drawable.ic_logout));
+
 		}
 
 		@Override
 		public int getCount() {
-			// user + project
-			return 2;
+			// user + menus
+			return mMenus.size() + 1;
 		}
 
 		@Override
@@ -143,8 +164,7 @@ public class MainActivity extends Activity {
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			switch (position) {
-			case 0:
+			if (position == 0) {
 				View userRow = convertView;
 				if (userRow == null) {
 					userRow = mInflater.inflate(R.layout.menu_user_information_row,
@@ -166,7 +186,9 @@ public class MainActivity extends Activity {
 				}
 
 				return userRow;
-			default:
+			}
+			// Other normal menu
+			else {
 				View otherRow = convertView;
 				if (otherRow == null) {
 					otherRow = mInflater.inflate(R.layout.menu_icon_name_row, parent,
@@ -181,22 +203,25 @@ public class MainActivity extends Activity {
 				TextView name = (TextView) otherRow.findViewById(R.id.name);
 				name.setText(row.mName);
 
+				otherRow.setBackgroundResource(row.mBackgroundResource);
+
 				return otherRow;
 			}
 		}
 
 		public int getItemViewType(int position) {
-			switch (position) {
-			case 0:
+			// User profile
+			if (position == 0) {
 				return 0;
-			default:
+			}
+			// Other normal menu
+			else {
 				return 1;
 			}
 		}
 
 		public int getViewTypeCount() {
-			// First row is profile
-			return 1;
+			return 2;
 		}
 
 		public void updatePeople(People people, View menu) {
