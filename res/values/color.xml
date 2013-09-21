@@ -3,6 +3,11 @@
 
     <color name="loading_background">#ffffff</color>
 
+    <!-- Menu -->
+    <color name="main_menu_background">#222426</color>
+    <color name="main_menu_text">#dcd9d3</color>
+    <color name="main_menu_border">#dcd9d3</color>
+
     <!-- Progress Page -->
     <color name="progress_background">#f4f0e7</color>
     <color name="progress_event_grid_background">#ffffff</color>

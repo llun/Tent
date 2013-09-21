@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <dimen name="behide_menu_offset">80dip</dimen>
-    
+    <dimen name="behide_menu_offset">70dip</dimen>
+    <dimen name="behide_menu_shadow">4dip</dimen>
+    <dimen name="menu_padding">10dip</dimen>
+    <dimen name="menu_text_size">16sp</dimen>
+    <dimen name="menu_icon_size">40dip</dimen>
+    <dimen name="menu_icon_margin">10dip</dimen>
+
 </resources>

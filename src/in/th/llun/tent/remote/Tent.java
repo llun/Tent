@@ -5,6 +5,7 @@ import in.th.llun.tent.model.Account;
 import in.th.llun.tent.model.Authorization;
 import in.th.llun.tent.model.BasecampResponse;
 import in.th.llun.tent.model.Event;
+import in.th.llun.tent.model.People;
 import in.th.llun.tent.model.RemoteCollection;
 
 import java.util.ArrayList;
@@ -62,6 +63,14 @@ public class Tent {
 			}
 		}
 
+		if (sTent.mContext != context) {
+			sTent.mContext = context;
+		}
+
+		return sTent;
+	}
+
+	public static Tent getInstance() {
 		return sTent;
 	}
 
@@ -178,6 +187,19 @@ public class Tent {
 		});
 	}
 
+	public void me(final BasecampResponse<People> response) {
+
+		invoke(getEndpoint("people/me"), Verb.GET, null, new BaseRemoteResult() {
+
+			public void onResponse(JSONObject object) {
+				if (response != null) {
+					response.onResponse(new People(object));
+				}
+			}
+
+		});
+	}
+
 	private String getEndpoint(String model) {
 		return String.format("%s/%s.json", mAccount.getAPIEndpoint(), model);
 	}
@@ -185,6 +207,7 @@ public class Tent {
 	private void invoke(final String url, Verb verb,
 	    Map<String, String> parameters, final RemoteResult result) {
 
+		Log.v(LOG_TAG, "invoke url: " + url);
 		final OAuthRequest request = new OAuthRequest(verb, url);
 
 		if (parameters != null) {

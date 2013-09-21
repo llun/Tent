@@ -4,10 +4,17 @@
     <string name="app_name">Tent</string>
     <string name="loading">Loading</string>
 
+    <!-- Menu -->
+    <string name="menu_user_avatar">User avatar</string>
+    <string name="menu_icon">Icon</string>
+    <string name="menu_drawer_open">Open navigation drawer</string>
+    <string name="menu_drawer_close">Close navigation drawer</string>
+    <string name="menu_all_projects">All projects</string>
+
     <!-- Login Page -->
     <string name="login_label">Login to basecamp</string>
     <string name="login_authenticating">Authenticating</string>
-    
+
     <!-- Progress Page -->
     <string name="progress_creator_avatar">Creator avatar image</string>
 
