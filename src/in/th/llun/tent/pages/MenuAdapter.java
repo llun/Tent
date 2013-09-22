@@ -17,22 +17,6 @@ import android.widget.TextView;
 
 public class MenuAdapter extends BaseAdapter {
 
-	public static class MenuData {
-		final public String mName;
-		final public int mImageResource;
-		final public int mBackgroundResource;
-
-		public MenuData(String name, int imageResource) {
-			this(name, imageResource, 0);
-		}
-
-		public MenuData(String name, int imageResource, int backgroundResource) {
-			mName = name;
-			mImageResource = imageResource;
-			mBackgroundResource = backgroundResource;
-		}
-	}
-
 	private People mPeople;
 	private List<MenuData> mMenus;
 

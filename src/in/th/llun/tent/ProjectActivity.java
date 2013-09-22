@@ -1,25 +1,27 @@
 package in.th.llun.tent;
 
-import in.th.llun.tent.pages.MenuAdapter;
-import in.th.llun.tent.pages.MenuAdapter.MenuData;
+import in.th.llun.tent.pages.MenuData;
 import in.th.llun.tent.pages.ProjectProgressFragment;
 import in.th.llun.tent.remote.Tent;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import android.R.anim;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.widget.DrawerLayout;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.SpinnerAdapter;
+import android.widget.TextView;
 
 public class ProjectActivity extends Activity {
 
@@ -27,9 +29,6 @@ public class ProjectActivity extends Activity {
 
 	public static final int PAGE_PROGRESS = 0;
 
-	private DrawerLayout mDrawerLayout;
-	private ActionBarDrawerToggle mDrawerToggle;
-	private ListView mDrawerMenu;
 	private Tent mTent;
 
 	private Fragment mPages[];
@@ -44,35 +43,28 @@ public class ProjectActivity extends Activity {
 			Intent loginPage = new Intent(this, LoginActivity.class);
 			startActivity(loginPage);
 		} else {
-			setContentView(R.layout.activity_main);
+			setContentView(R.layout.activity_project);
 
-			mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-			getActionBar().setDisplayHomeAsUpEnabled(true);
-			getActionBar().setHomeButtonEnabled(true);
-
-			ArrayList<MenuAdapter.MenuData> menus = new ArrayList<MenuAdapter.MenuData>();
+			ArrayList<MenuData> menus = new ArrayList<MenuData>();
 			menus.add(new MenuData(getString(R.string.menu_progress),
-			    R.drawable.ic_progress));
+			    R.drawable.ic_progress, R.drawable.menu_row_background));
 			menus.add(new MenuData(getString(R.string.menu_calendars),
-			    R.drawable.ic_calendar));
+			    R.drawable.ic_calendar, R.drawable.menu_row_background));
 			menus.add(new MenuData(getString(R.string.menu_discussions),
-			    R.drawable.ic_discussions));
-			menus
-			    .add(new MenuData(getString(R.string.menu_notes), R.drawable.ic_note));
+			    R.drawable.ic_discussions, R.drawable.menu_row_background));
+			menus.add(new MenuData(getString(R.string.menu_notes),
+			    R.drawable.ic_note, R.drawable.menu_row_background));
 
-			mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-			    R.drawable.ic_drawer, R.string.menu_drawer_open,
-			    R.string.menu_drawer_close);
-			mDrawerMenu = (ListView) findViewById(R.id.left_drawer);
-			mDrawerMenu.setAdapter(new MenuAdapter(getLayoutInflater(), menus));
-			mDrawerMenu.setOnItemClickListener(new OnItemClickListener() {
-
+			ActionBar actionBar = getActionBar();
+			actionBar.setHomeButtonEnabled(true);
+			actionBar.setDisplayHomeAsUpEnabled(true);
+			actionBar.setDisplayShowTitleEnabled(false);
+			actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+			actionBar.setListNavigationCallbacks(new ProjectMenuAdapter(
+			    getLayoutInflater(), menus), new ActionBar.OnNavigationListener() {
 				@Override
-				public void onItemClick(AdapterView<?> parent, View view, int position,
-				    long id) {
-					if (position > 0) {
-						selectPage(position - 1);
-					}
+				public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+					return false;
 				}
 			});
 
@@ -86,38 +78,78 @@ public class ProjectActivity extends Activity {
 			return;
 		Fragment fragment = mPages[position];
 		FragmentManager fragmentManager = getFragmentManager();
-		fragmentManager.beginTransaction().replace(R.id.content_frame, fragment)
+		fragmentManager.beginTransaction().replace(R.id.project_content, fragment)
 		    .commit();
-
-		mDrawerLayout.closeDrawer(mDrawerMenu);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// The action bar home/up action should open or close the drawer.
-		// ActionBarDrawerToggle will take care of this.
-		if (mDrawerToggle.onOptionsItemSelected(item)) {
-			return true;
-		}
-		// Handle action buttons
 		switch (item.getItemId()) {
+		case android.R.id.home:
+			finish();
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
 	}
 
-	@Override
-	protected void onPostCreate(Bundle savedInstanceState) {
-		super.onPostCreate(savedInstanceState);
-		// Sync the toggle state after onRestoreInstanceState has occurred.
-		mDrawerToggle.syncState();
-	}
+	private static class ProjectMenuAdapter extends BaseAdapter implements
+	    SpinnerAdapter {
 
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-		// Pass any configuration change to the drawer toggls
-		mDrawerToggle.onConfigurationChanged(newConfig);
-	}
+		private LayoutInflater mLayoutInflater;
+		private List<MenuData> mMenus;
 
+		public ProjectMenuAdapter(LayoutInflater inflater, List<MenuData> menus) {
+			mLayoutInflater = inflater;
+			mMenus = menus;
+		}
+
+		@Override
+		public int getCount() {
+			return mMenus.size();
+		}
+
+		@Override
+		public Object getItem(int position) {
+			return mMenus.get(position);
+		}
+
+		@Override
+		public long getItemId(int position) {
+			return position;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			TextView row = (TextView) convertView;
+			if (row == null) {
+				row = new TextView(mLayoutInflater.getContext());
+			}
+
+			MenuData data = mMenus.get(position);
+			row.setText(data.mName);
+
+			return row;
+		}
+
+		public View getDropDownView(int position, View convertView, ViewGroup parent) {
+			View row = convertView;
+			if (row == null) {
+				row = mLayoutInflater.inflate(R.layout.menu_icon_name_row, parent,
+				    false);
+			}
+
+			MenuData data = mMenus.get(position);
+			row.setTag(position);
+
+			ImageView icon = (ImageView) row.findViewById(R.id.icon);
+			icon.setImageResource(data.mImageResource);
+
+			TextView name = (TextView) row.findViewById(R.id.name);
+			name.setText(data.mName);
+
+			row.setBackgroundResource(data.mBackgroundResource);
+			return row;
+		}
+	}
 }

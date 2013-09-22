@@ -1,7 +1,7 @@
 package in.th.llun.tent;
 
 import in.th.llun.tent.pages.MenuAdapter;
-import in.th.llun.tent.pages.MenuAdapter.MenuData;
+import in.th.llun.tent.pages.MenuData;
 import in.th.llun.tent.pages.ProgressFragment;
 import in.th.llun.tent.pages.ProjectFragment;
 import in.th.llun.tent.remote.Tent;
@@ -54,7 +54,7 @@ public class MainActivity extends Activity {
 			    R.drawable.ic_drawer, R.string.menu_drawer_open,
 			    R.string.menu_drawer_close);
 
-			ArrayList<MenuAdapter.MenuData> menus = new ArrayList<MenuAdapter.MenuData>();
+			ArrayList<MenuData> menus = new ArrayList<MenuData>();
 			menus.add(new MenuData(getString(R.string.menu_progress),
 			    R.drawable.ic_progress));
 			menus.add(new MenuData(getString(R.string.menu_all_projects),
