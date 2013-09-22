@@ -1,6 +1,6 @@
-package in.th.llun.tent;
+package in.th.llun.tent.pages;
 
-import in.th.llun.tent.component.EventsAdapter;
+import in.th.llun.tent.R;
 import in.th.llun.tent.model.BasecampResponse;
 import in.th.llun.tent.model.Event;
 import in.th.llun.tent.model.RemoteCollection;

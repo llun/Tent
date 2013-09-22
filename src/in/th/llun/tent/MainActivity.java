@@ -2,7 +2,10 @@ package in.th.llun.tent;
 
 import in.th.llun.tent.model.BasecampResponse;
 import in.th.llun.tent.model.People;
+import in.th.llun.tent.pages.ProgressFragment;
+import in.th.llun.tent.pages.ProjectFragment;
 import in.th.llun.tent.remote.Tent;
+import in.th.llun.tent.tools.ImageLoader;
 
 import java.util.ArrayList;
 
@@ -26,15 +29,21 @@ import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
+	public static int PAGE_PROGRESS = 0;
+	public static int PAGE_PROJECTS = 1;
+
 	private DrawerLayout mDrawerLayout;
 	private ActionBarDrawerToggle mDrawerToggle;
 	private ListView mDrawerMenu;
 	private Tent mTent;
 
+	private Fragment mPages[];
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		mPages = new Fragment[] { new ProgressFragment(), new ProjectFragment() };
 		mTent = Tent.getInstance(getApplicationContext());
 		if (!mTent.isLoggedIn()) {
 			Intent loginPage = new Intent(this, LoginActivity.class);
@@ -52,13 +61,13 @@ public class MainActivity extends Activity {
 			mDrawerMenu = (ListView) findViewById(R.id.left_drawer);
 			mDrawerMenu.setAdapter(new MenuAdapter(getResources(),
 			    getLayoutInflater()));
-			selectPage(0);
+			selectPage(PAGE_PROGRESS);
 		}
 
 	}
 
 	private void selectPage(int position) {
-		Fragment fragment = new ProgressFragment();
+		Fragment fragment = mPages[position];
 		FragmentManager fragmentManager = getFragmentManager();
 		fragmentManager.beginTransaction().replace(R.id.content_frame, fragment)
 		    .commit();
@@ -75,7 +84,6 @@ public class MainActivity extends Activity {
 		}
 		// Handle action buttons
 		switch (item.getItemId()) {
-
 		default:
 			return super.onOptionsItemSelected(item);
 		}

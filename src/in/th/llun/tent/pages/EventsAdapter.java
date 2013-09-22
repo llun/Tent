@@ -1,8 +1,8 @@
-package in.th.llun.tent.component;
+package in.th.llun.tent.pages;
 
-import in.th.llun.tent.ImageLoader;
 import in.th.llun.tent.R;
 import in.th.llun.tent.model.Event;
+import in.th.llun.tent.tools.ImageLoader;
 
 import java.util.List;
 
