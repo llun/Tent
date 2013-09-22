@@ -26,5 +26,6 @@
     
     <!-- Project Page -->
     <string name="project_star">Project star</string>
+    <string name="project_last_updated">Last updated: %s</string>
 
 </resources>

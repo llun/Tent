@@ -16,11 +16,18 @@
         android:id="@+id/projectName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/projectStar"
-        android:layout_alignTop="@+id/projectStar"
         android:layout_toRightOf="@+id/projectStar"
         android:gravity="center_vertical|left"
         android:text="@string/loading"
         android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/projectUpdatedTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/projectName"
+        android:layout_below="@+id/projectName"
+        android:text="@string/loading"
+        android:textSize="12sp" />
 
 </RelativeLayout>

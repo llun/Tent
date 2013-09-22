@@ -11,7 +11,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.ocpsoft.prettytime.PrettyTime;
+
 import android.app.Fragment;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,7 +37,7 @@ public class ProjectFragment extends Fragment {
 		final View rootView = inflater.inflate(R.layout.fragment_projects,
 		    container, false);
 		ListView projectList = (ListView) rootView.findViewById(R.id.projectList);
-		projectList.setAdapter(new ProjectAdapter(mTent, inflater));
+		projectList.setAdapter(new ProjectAdapter(mTent, getResources(), inflater));
 
 		return rootView;
 	}
@@ -42,12 +45,15 @@ public class ProjectFragment extends Fragment {
 	private static class ProjectAdapter extends BaseAdapter {
 
 		private LayoutInflater mLayoutInflater;
+		private Resources mResources;
 		private Tent mTent;
 
 		private List<Project> mProjects;
 
-		public ProjectAdapter(Tent tent, LayoutInflater inflater) {
+		public ProjectAdapter(Tent tent, Resources resources,
+		    LayoutInflater inflater) {
 			mLayoutInflater = inflater;
+			mResources = resources;
 			mTent = tent;
 
 			mProjects = new ArrayList<Project>();
@@ -99,6 +105,12 @@ public class ProjectFragment extends Fragment {
 			Project project = mProjects.get(position);
 			TextView projectName = (TextView) row.findViewById(R.id.projectName);
 			projectName.setText(project.getName());
+
+			TextView projectUpdatedTime = (TextView) row
+			    .findViewById(R.id.projectUpdatedTime);
+			projectUpdatedTime.setText(String.format(
+			    mResources.getString(R.string.project_last_updated),
+			    new PrettyTime().format(project.getUpdatedAt())));
 
 			ImageView starIcon = (ImageView) row.findViewById(R.id.projectStar);
 			if (project.isStarred()) {
