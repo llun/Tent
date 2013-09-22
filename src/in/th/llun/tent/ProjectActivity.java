@@ -1,5 +1,6 @@
 package in.th.llun.tent;
 
+import in.th.llun.tent.model.Project;
 import in.th.llun.tent.pages.MenuData;
 import in.th.llun.tent.pages.ProjectProgressFragment;
 import in.th.llun.tent.remote.Tent;
@@ -7,13 +8,16 @@ import in.th.llun.tent.remote.Tent;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.R.anim;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,6 +34,7 @@ public class ProjectActivity extends Activity {
 	public static final int PAGE_PROGRESS = 0;
 
 	private Tent mTent;
+	private Project mProject;
 
 	private Fragment mPages[];
 
@@ -68,6 +73,14 @@ public class ProjectActivity extends Activity {
 				}
 			});
 
+			String rawProject = getIntent().getStringExtra(EXTRA_PROJECT);
+			try {
+				mProject = new Project(new JSONObject(rawProject));
+			} catch (JSONException e) {
+				Log.e(Tent.LOG_TAG, "Can't parse raw project", e);
+				finish();
+			}
+
 			selectPage(PAGE_PROGRESS);
 		}
 
@@ -76,9 +89,13 @@ public class ProjectActivity extends Activity {
 	private void selectPage(int position) {
 		if (position >= mPages.length)
 			return;
+		Bundle arguments = new Bundle();
+		arguments.putString(EXTRA_PROJECT, mProject.rawString());
+
 		Fragment fragment = mPages[position];
+		fragment.setArguments(arguments);
 		FragmentManager fragmentManager = getFragmentManager();
-		fragmentManager.beginTransaction().replace(R.id.project_content, fragment)
+		fragmentManager.beginTransaction().replace(R.id.projectContent, fragment)
 		    .commit();
 	}
 

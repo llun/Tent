@@ -5,6 +5,7 @@ import in.th.llun.tent.model.Account;
 import in.th.llun.tent.model.Authorization;
 import in.th.llun.tent.model.BasecampResponse;
 import in.th.llun.tent.model.Event;
+import in.th.llun.tent.model.Formatter;
 import in.th.llun.tent.model.People;
 import in.th.llun.tent.model.Project;
 import in.th.llun.tent.model.RemoteCollection;
@@ -78,7 +79,7 @@ public class Tent {
 	public Tent(Context context, Settings settings) {
 		mContext = context;
 		mSettings = settings;
-		mExecutor = Executors.newSingleThreadExecutor();
+		mExecutor = Executors.newFixedThreadPool(10);
 		mService = new ServiceBuilder().provider(BasecampApi.class)
 		    .apiKey(mSettings.getID()).apiSecret(mSettings.getSecret())
 		    .callback(BASECAMP_AUTHORIZE_REDIRECT_URL).build();
@@ -170,9 +171,13 @@ public class Tent {
 		    });
 	}
 
-	public void loadEvents(
+	public void loadEvents(Date since, int page,
 	    final BasecampResponse<RemoteCollection<Event>> response) {
 		HashMap<String, String> parameters = new HashMap<String, String>();
+		parameters.put("page", Integer.toString(page));
+		if (since != null) {
+			parameters.put("since", Formatter.stringFromDateWithTimezone(since));
+		}
 
 		invoke(getEndpoint("events"), Verb.GET, parameters, new BaseRemoteResult() {
 
@@ -188,6 +193,11 @@ public class Tent {
 		});
 	}
 
+	public void loadEvents(
+	    final BasecampResponse<RemoteCollection<Event>> response) {
+		loadEvents(null, 1, response);
+	}
+
 	public void me(final BasecampResponse<People> response) {
 
 		invoke(getEndpoint("people/me"), Verb.GET, null, new BaseRemoteResult() {
@@ -199,6 +209,25 @@ public class Tent {
 			}
 
 		});
+	}
+
+	public void loadProjectEvents(Project project,
+	    final BasecampResponse<RemoteCollection<Event>> response) {
+
+		invoke(getEndpoint("projects/" + project.getId() + "/events"), Verb.GET,
+		    null, new BaseRemoteResult() {
+
+			    public void onResponse(JSONArray array) {
+				    ArrayList<Event> events = new ArrayList<Event>(array.length());
+				    for (int i = 0; i < array.length(); i++) {
+					    JSONObject raw = array.optJSONObject(i);
+					    events.add(new Event(raw));
+				    }
+				    response.onResponse(new RemoteCollection<Event>(events));
+			    }
+
+		    });
+
 	}
 
 	public void loadProjects(

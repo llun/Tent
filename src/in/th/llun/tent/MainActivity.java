@@ -46,7 +46,7 @@ public class MainActivity extends Activity {
 		} else {
 			setContentView(R.layout.activity_main);
 
-			mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+			mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
 			getActionBar().setDisplayHomeAsUpEnabled(true);
 			getActionBar().setHomeButtonEnabled(true);
 
@@ -70,7 +70,7 @@ public class MainActivity extends Activity {
 			menus.add(new MenuData(getString(R.string.menu_logout),
 			    R.drawable.ic_logout));
 
-			mDrawerMenu = (ListView) findViewById(R.id.left_drawer);
+			mDrawerMenu = (ListView) findViewById(R.id.leftDrawer);
 			mDrawerMenu.setAdapter(new MenuAdapter(getLayoutInflater(), menus));
 			mDrawerMenu.setOnItemClickListener(new OnItemClickListener() {
 
@@ -93,7 +93,7 @@ public class MainActivity extends Activity {
 			return;
 		Fragment fragment = mPages[position];
 		FragmentManager fragmentManager = getFragmentManager();
-		fragmentManager.beginTransaction().replace(R.id.content_frame, fragment)
+		fragmentManager.beginTransaction().replace(R.id.contentFrame, fragment)
 		    .commit();
 
 		mDrawerLayout.closeDrawer(mDrawerMenu);

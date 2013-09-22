@@ -1,9 +1,14 @@
 package in.th.llun.tent.pages;
 
 import in.th.llun.tent.R;
+import in.th.llun.tent.model.BasecampResponse;
 import in.th.llun.tent.model.Event;
+import in.th.llun.tent.model.Project;
+import in.th.llun.tent.model.RemoteCollection;
+import in.th.llun.tent.remote.Tent;
 import in.th.llun.tent.tools.ImageLoader;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.ocpsoft.prettytime.PrettyTime;
@@ -18,12 +23,26 @@ import android.widget.TextView;
 
 public class EventsAdapter extends BaseAdapter {
 
+	private Tent mTent;
 	private List<Event> mEvents;
 	private LayoutInflater mLayoutInflater;
+	private Project mProject;
 
-	public EventsAdapter(List<Event> events, LayoutInflater layoutInflater) {
-		mEvents = events;
+	public EventsAdapter(Tent tent, LayoutInflater layoutInflater, Project project) {
+		mTent = tent;
+		mEvents = new ArrayList<Event>();
 		mLayoutInflater = layoutInflater;
+		mProject = project;
+
+		if (mProject != null) {
+			mTent.loadProjectEvents(mProject, new EventsResponse());
+		} else {
+			mTent.loadEvents(new EventsResponse());
+		}
+	}
+
+	public EventsAdapter(Tent tent, LayoutInflater layoutInflater) {
+		this(tent, layoutInflater, null);
 	}
 
 	@Override
@@ -66,6 +85,17 @@ public class EventsAdapter extends BaseAdapter {
 		timestamp.setText(new PrettyTime().format(event.getCreatedAt()));
 
 		return row;
+	}
+
+	private final class EventsResponse implements
+	    BasecampResponse<RemoteCollection<Event>> {
+
+		@Override
+		public void onResponse(RemoteCollection<Event> response) {
+			mEvents.addAll(response.collection());
+			notifyDataSetChanged();
+		}
+
 	}
 
 }
