@@ -23,5 +23,8 @@
 
     <!-- Progress Page -->
     <string name="progress_creator_avatar">Creator avatar image</string>
+    
+    <!-- Project Page -->
+    <string name="project_star">Project star</string>
 
 </resources>

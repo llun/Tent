@@ -6,6 +6,7 @@ import in.th.llun.tent.model.Authorization;
 import in.th.llun.tent.model.BasecampResponse;
 import in.th.llun.tent.model.Event;
 import in.th.llun.tent.model.People;
+import in.th.llun.tent.model.Project;
 import in.th.llun.tent.model.RemoteCollection;
 
 import java.util.ArrayList;
@@ -198,6 +199,26 @@ public class Tent {
 			}
 
 		});
+	}
+
+	public void loadProjects(
+	    final BasecampResponse<RemoteCollection<Project>> response) {
+
+		invoke(getEndpoint("projects"), Verb.GET, null, new BaseRemoteResult() {
+
+			public void onResponse(JSONArray array) {
+				if (response != null) {
+					ArrayList<Project> projects = new ArrayList<Project>(array.length());
+					for (int i = 0; i < array.length(); i++) {
+						JSONObject raw = array.optJSONObject(i);
+						projects.add(new Project(raw));
+					}
+					response.onResponse(new RemoteCollection<Project>(projects));
+				}
+			}
+
+		});
+
 	}
 
 	private String getEndpoint(String model) {

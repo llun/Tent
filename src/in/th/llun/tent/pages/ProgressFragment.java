@@ -20,7 +20,7 @@ public class ProgressFragment extends Fragment {
 	public View onCreateView(final LayoutInflater inflater, ViewGroup container,
 	    Bundle savedInstanceState) {
 
-		mTent = Tent.getInstance(getActivity().getApplicationContext());
+		mTent = Tent.getInstance();
 
 		final View rootView = inflater.inflate(R.layout.fragment_progress,
 		    container, false);
