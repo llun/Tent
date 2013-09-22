@@ -1,5 +1,6 @@
 package in.th.llun.tent.pages;
 
+import in.th.llun.tent.ProjectActivity;
 import in.th.llun.tent.R;
 import in.th.llun.tent.model.BasecampResponse;
 import in.th.llun.tent.model.Project;
@@ -14,11 +15,14 @@ import java.util.List;
 import org.ocpsoft.prettytime.PrettyTime;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -38,6 +42,19 @@ public class ProjectFragment extends Fragment {
 		    container, false);
 		ListView projectList = (ListView) rootView.findViewById(R.id.projectList);
 		projectList.setAdapter(new ProjectAdapter(mTent, getResources(), inflater));
+		projectList.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position,
+			    long id) {
+				Project project = (Project) parent.getItemAtPosition(position);
+
+				Intent projectIntent = new Intent(getActivity(), ProjectActivity.class);
+				projectIntent.putExtra(ProjectActivity.EXTRA_PROJECT,
+				    project.rawString());
+				startActivity(projectIntent);
+			}
+		});
 
 		return rootView;
 	}

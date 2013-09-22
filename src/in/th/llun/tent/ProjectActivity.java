@@ -2,8 +2,7 @@ package in.th.llun.tent;
 
 import in.th.llun.tent.pages.MenuAdapter;
 import in.th.llun.tent.pages.MenuAdapter.MenuData;
-import in.th.llun.tent.pages.ProgressFragment;
-import in.th.llun.tent.pages.ProjectFragment;
+import in.th.llun.tent.pages.ProjectProgressFragment;
 import in.th.llun.tent.remote.Tent;
 
 import java.util.ArrayList;
@@ -22,10 +21,11 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-public class MainActivity extends Activity {
+public class ProjectActivity extends Activity {
 
-	public static int PAGE_PROGRESS = 0;
-	public static int PAGE_PROJECTS = 1;
+	public static final String EXTRA_PROJECT = "project";
+
+	public static final int PAGE_PROGRESS = 0;
 
 	private DrawerLayout mDrawerLayout;
 	private ActionBarDrawerToggle mDrawerToggle;
@@ -38,7 +38,7 @@ public class MainActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		mPages = new Fragment[] { new ProgressFragment(), new ProjectFragment() };
+		mPages = new Fragment[] { new ProjectProgressFragment() };
 		mTent = Tent.getInstance(getApplicationContext());
 		if (!mTent.isLoggedIn()) {
 			Intent loginPage = new Intent(this, LoginActivity.class);
@@ -50,26 +50,19 @@ public class MainActivity extends Activity {
 			getActionBar().setDisplayHomeAsUpEnabled(true);
 			getActionBar().setHomeButtonEnabled(true);
 
-			mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-			    R.drawable.ic_drawer, R.string.menu_drawer_open,
-			    R.string.menu_drawer_close);
-
 			ArrayList<MenuAdapter.MenuData> menus = new ArrayList<MenuAdapter.MenuData>();
 			menus.add(new MenuData(getString(R.string.menu_progress),
 			    R.drawable.ic_progress));
-			menus.add(new MenuData(getString(R.string.menu_all_projects),
-			    R.drawable.ic_project));
 			menus.add(new MenuData(getString(R.string.menu_calendars),
 			    R.drawable.ic_calendar));
 			menus.add(new MenuData(getString(R.string.menu_discussions),
 			    R.drawable.ic_discussions));
 			menus
 			    .add(new MenuData(getString(R.string.menu_notes), R.drawable.ic_note));
-			menus.add(new MenuData(getString(R.string.menu_settings),
-			    R.drawable.ic_settings, R.drawable.menu_divider_row_background));
-			menus.add(new MenuData(getString(R.string.menu_logout),
-			    R.drawable.ic_logout));
 
+			mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+			    R.drawable.ic_drawer, R.string.menu_drawer_open,
+			    R.string.menu_drawer_close);
 			mDrawerMenu = (ListView) findViewById(R.id.left_drawer);
 			mDrawerMenu.setAdapter(new MenuAdapter(getLayoutInflater(), menus));
 			mDrawerMenu.setOnItemClickListener(new OnItemClickListener() {
