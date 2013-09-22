@@ -22,6 +22,8 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -61,12 +63,25 @@ public class MainActivity extends Activity {
 			mDrawerMenu = (ListView) findViewById(R.id.left_drawer);
 			mDrawerMenu.setAdapter(new MenuAdapter(getResources(),
 			    getLayoutInflater()));
+			mDrawerMenu.setOnItemClickListener(new OnItemClickListener() {
+
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view, int position,
+				    long id) {
+					if (position > 0) {
+						selectPage(position - 1);
+					}
+				}
+			});
+
 			selectPage(PAGE_PROGRESS);
 		}
 
 	}
 
 	private void selectPage(int position) {
+		if (position >= mPages.length)
+			return;
 		Fragment fragment = mPages[position];
 		FragmentManager fragmentManager = getFragmentManager();
 		fragmentManager.beginTransaction().replace(R.id.content_frame, fragment)
@@ -105,15 +120,13 @@ public class MainActivity extends Activity {
 
 	private static class MenuAdapter extends BaseAdapter {
 
-		private static class NormalRow {
+		public static class NormalRow {
 			final public String mName;
 			final public int mImageResource;
 			final public int mBackgroundResource;
 
 			public NormalRow(String name, int imageResource) {
-				mName = name;
-				mImageResource = imageResource;
-				mBackgroundResource = 0;
+				this(name, imageResource, 0);
 			}
 
 			public NormalRow(String name, int imageResource, int backgroundResource) {
@@ -204,6 +217,7 @@ public class MainActivity extends Activity {
 				}
 
 				NormalRow row = mMenus.get(position - 1);
+				otherRow.setTag(position - 1);
 
 				ImageView icon = (ImageView) otherRow.findViewById(R.id.icon);
 				icon.setImageResource(row.mImageResource);
