@@ -2,6 +2,7 @@ package in.th.llun.tent;
 
 import in.th.llun.tent.model.Project;
 import in.th.llun.tent.pages.MenuData;
+import in.th.llun.tent.pages.ProjectDocumentsFragment;
 import in.th.llun.tent.pages.ProjectProgressFragment;
 import in.th.llun.tent.remote.Tent;
 
@@ -42,7 +43,8 @@ public class ProjectActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		mPages = new Fragment[] { new ProjectProgressFragment() };
+		mPages = new Fragment[] { new ProjectProgressFragment(), null, null,
+		    new ProjectDocumentsFragment() };
 		mTent = Tent.getInstance(getApplicationContext());
 		if (!mTent.isLoggedIn()) {
 			Intent loginPage = new Intent(this, LoginActivity.class);
@@ -69,7 +71,8 @@ public class ProjectActivity extends Activity {
 			    getLayoutInflater(), menus), new ActionBar.OnNavigationListener() {
 				@Override
 				public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-					return false;
+					selectPage(itemPosition);
+					return true;
 				}
 			});
 
@@ -80,8 +83,6 @@ public class ProjectActivity extends Activity {
 				Log.e(Tent.LOG_TAG, "Can't parse raw project", e);
 				finish();
 			}
-
-			selectPage(PAGE_PROGRESS);
 		}
 
 	}
@@ -93,10 +94,14 @@ public class ProjectActivity extends Activity {
 		arguments.putString(EXTRA_PROJECT, mProject.rawString());
 
 		Fragment fragment = mPages[position];
-		fragment.setArguments(arguments);
-		FragmentManager fragmentManager = getFragmentManager();
-		fragmentManager.beginTransaction().replace(R.id.projectContent, fragment)
-		    .commit();
+		// TODO: Remote temporary checking
+		if (fragment != null) {
+			fragment.setArguments(arguments);
+			FragmentManager fragmentManager = getFragmentManager();
+			fragmentManager.beginTransaction().replace(R.id.projectContent, fragment)
+			    .commit();
+		}
+
 	}
 
 	@Override

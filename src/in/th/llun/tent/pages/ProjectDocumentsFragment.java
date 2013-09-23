@@ -8,12 +8,12 @@ import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.TextView;
 
-public class ProjectProgressFragment extends ProjectActivityFragment {
+public class ProjectDocumentsFragment extends ProjectActivityFragment {
 
 	@Override
 	protected View createProjectFragmentView(LayoutInflater inflater,
 	    ViewGroup container, Bundle savedInstance) {
-		View rootView = inflater.inflate(R.layout.fragment_project_progress,
+		View rootView = inflater.inflate(R.layout.fragment_project_documents,
 		    container, false);
 		TextView projectName = (TextView) rootView.findViewById(R.id.projectName);
 		projectName.setText(mProject.getName());
@@ -22,8 +22,8 @@ public class ProjectProgressFragment extends ProjectActivityFragment {
 		    .findViewById(R.id.projectDescription);
 		projectDescription.setText(mProject.getDescription());
 
-		GridView eventGrid = (GridView) rootView.findViewById(R.id.eventGrid);
-		eventGrid.setAdapter(new EventsAdapter(mTent, inflater, mProject));
+		GridView documentGrid = (GridView) rootView.findViewById(R.id.documentGrid);
+		documentGrid.setAdapter(new DocumentsAdapter(mTent, inflater, mProject));
 
 		return rootView;
 	}

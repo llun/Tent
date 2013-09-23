@@ -12,7 +12,7 @@
     <string name="menu_all_projects">Projects</string>
     <string name="menu_calendars">Calendars</string>
     <string name="menu_progress">Progress</string>
-    <string name="menu_notes">Notes</string>
+    <string name="menu_notes">Documents</string>
     <string name="menu_discussions">Discussions</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_logout">Logout</string>
@@ -23,9 +23,12 @@
 
     <!-- Progress Page -->
     <string name="progress_creator_avatar">Creator avatar image</string>
-    
+
     <!-- Project Page -->
     <string name="project_star">Project star</string>
     <string name="project_last_updated">Last updated: %s</string>
+
+    <!-- Project Document Page -->
+    <string name="project_document_last_updated">Last updated: %s</string>
 
 </resources>

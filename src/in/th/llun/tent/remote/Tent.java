@@ -4,6 +4,7 @@ import in.th.llun.tent.Settings;
 import in.th.llun.tent.model.Account;
 import in.th.llun.tent.model.Authorization;
 import in.th.llun.tent.model.BasecampResponse;
+import in.th.llun.tent.model.Document;
 import in.th.llun.tent.model.Event;
 import in.th.llun.tent.model.Formatter;
 import in.th.llun.tent.model.People;
@@ -171,6 +172,19 @@ public class Tent {
 		    });
 	}
 
+	public void me(final BasecampResponse<People> response) {
+
+		invoke(getEndpoint("people/me"), Verb.GET, null, new BaseRemoteResult() {
+
+			public void onResponse(JSONObject object) {
+				if (response != null) {
+					response.onResponse(new People(object));
+				}
+			}
+
+		});
+	}
+
 	public void loadEvents(Date since, int page,
 	    final BasecampResponse<RemoteCollection<Event>> response) {
 		HashMap<String, String> parameters = new HashMap<String, String>();
@@ -196,19 +210,6 @@ public class Tent {
 	public void loadEvents(
 	    final BasecampResponse<RemoteCollection<Event>> response) {
 		loadEvents(null, 1, response);
-	}
-
-	public void me(final BasecampResponse<People> response) {
-
-		invoke(getEndpoint("people/me"), Verb.GET, null, new BaseRemoteResult() {
-
-			public void onResponse(JSONObject object) {
-				if (response != null) {
-					response.onResponse(new People(object));
-				}
-			}
-
-		});
 	}
 
 	public void loadProjectEvents(Project project,
@@ -243,6 +244,37 @@ public class Tent {
 						projects.add(new Project(raw));
 					}
 					response.onResponse(new RemoteCollection<Project>(projects));
+				}
+			}
+
+		});
+
+	}
+
+	public void loadProjectDocuments(
+	    final BasecampResponse<RemoteCollection<Document>> response) {
+		loadProjectDocuments(null, response);
+	}
+
+	public void loadProjectDocuments(Project project,
+	    final BasecampResponse<RemoteCollection<Document>> response) {
+
+		String endpoint = "documents";
+		if (project != null) {
+			endpoint = "projects/" + project.getId() + "/documents";
+		}
+
+		invoke(getEndpoint(endpoint), Verb.GET, null, new BaseRemoteResult() {
+
+			public void onResponse(JSONArray array) {
+				if (response != null) {
+					ArrayList<Document> documents = new ArrayList<Document>(array
+					    .length());
+					for (int i = 0; i < array.length(); i++) {
+						JSONObject raw = array.optJSONObject(i);
+						documents.add(new Document(raw));
+					}
+					response.onResponse(new RemoteCollection<Document>(documents));
 				}
 			}
 
