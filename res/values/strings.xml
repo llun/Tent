@@ -31,4 +31,8 @@
     <!-- Project Document Page -->
     <string name="project_document_last_updated">Last updated: %s</string>
 
+    <!-- Document Page -->
+    <string name="document_title_hint">Title</string>
+    <string name="document_content_hint">Your note</string>
+
 </resources>

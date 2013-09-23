@@ -282,6 +282,23 @@ public class Tent {
 
 	}
 
+	public void getDocument(String documentUrl,
+	    final BasecampResponse<Document> response) {
+
+		invoke(documentUrl, Verb.GET, null, new BaseRemoteResult() {
+
+			public void onResponse(JSONObject object) {
+
+				if (response != null) {
+					response.onResponse(new Document(object));
+				}
+
+			}
+
+		});
+
+	}
+
 	private String getEndpoint(String model) {
 		return String.format("%s/%s.json", mAccount.getAPIEndpoint(), model);
 	}

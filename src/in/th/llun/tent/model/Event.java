@@ -61,8 +61,8 @@ public class Event extends JSONRemoteObject {
 		}
 	}
 
-	public Creator getCreator() {
-		return new Creator(mRaw.optJSONObject("creator"));
+	public People getCreator() {
+		return new People(mRaw.optJSONObject("creator"));
 	}
 
 }
