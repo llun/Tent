@@ -28,7 +28,10 @@ public class Authorization extends JSONRemoteObject {
 		for (int i = 0; i < array.length(); i++) {
 			JSONObject raw = array.optJSONObject(i);
 			Account account = new Account(raw);
-			accounts.add(account);
+			// Support only new Basecamp API
+			if (account.getProduct().equals("bcx")) {
+				accounts.add(account);
+			}
 		}
 
 		return new RemoteCollection<Account>(accounts);

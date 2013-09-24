@@ -13,7 +13,7 @@ public class Account extends JSONRemoteObject {
 	}
 
 	public String getProduct() {
-		return mRaw.optString("production");
+		return mRaw.optString("product");
 	}
 
 	public String getName() {
