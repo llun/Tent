@@ -2,6 +2,7 @@ package in.th.llun.tent;
 
 import in.th.llun.tent.model.Project;
 import in.th.llun.tent.pages.MenuData;
+import in.th.llun.tent.pages.ProjectDiscussionFragment;
 import in.th.llun.tent.pages.ProjectDocumentsFragment;
 import in.th.llun.tent.pages.ProjectProgressFragment;
 import in.th.llun.tent.remote.Tent;
@@ -43,8 +44,8 @@ public class ProjectActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		mPages = new Fragment[] { new ProjectProgressFragment(), null, null,
-		    new ProjectDocumentsFragment() };
+		mPages = new Fragment[] { new ProjectProgressFragment(), null,
+		    new ProjectDiscussionFragment(), new ProjectDocumentsFragment() };
 		mTent = Tent.getInstance(getApplicationContext());
 		if (!mTent.isLoggedIn()) {
 			Intent loginPage = new Intent(this, LoginActivity.class);
