@@ -40,6 +40,12 @@ public class MainActivity extends Activity {
 
 		mPages = new Fragment[] { new ProgressFragment(), new ProjectFragment() };
 		mTent = Tent.getInstance(getApplicationContext());
+
+	}
+
+	public void onStart() {
+		super.onStart();
+
 		if (!mTent.isLoggedIn()) {
 			Intent loginPage = new Intent(this, LoginActivity.class);
 			startActivity(loginPage);
@@ -85,7 +91,6 @@ public class MainActivity extends Activity {
 
 			selectPage(PAGE_PROGRESS);
 		}
-
 	}
 
 	private void selectPage(int position) {
