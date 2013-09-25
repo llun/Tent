@@ -32,10 +32,7 @@ public class DocumentsAdapter extends BaseAdapter {
 		mLayoutInflater = layoutInflater;
 		mProject = project;
 
-		if (mProject != null) {
-			mTent.loadProjectDocuments(mProject, new DocumentsResponse());
-		} else {
-		}
+		mTent.loadProjectDocuments(mProject, new DocumentsResponse());
 	}
 
 	public DocumentsAdapter(Tent tent, LayoutInflater layoutInflater) {

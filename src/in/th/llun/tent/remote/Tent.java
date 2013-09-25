@@ -312,7 +312,10 @@ public class Tent {
 			parameters.put("page", Integer.toString(page));
 		}
 
-		String endpoint = "projects/" + project.getId() + "/topics";
+		String endpoint = "topics";
+		if (project != null) {
+			endpoint = "projects/" + project.getId() + "/topics";
+		}
 
 		invoke(getEndpoint(endpoint), Verb.GET, parameters, new BaseRemoteResult() {
 
